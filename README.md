@@ -1,157 +1,154 @@
-SMS Spam Classifier API (FastAPI + ML + Docker)
-- Overview
+# SMS Spam Classifier API
 
-This project implements an end-to-end machine learning pipeline for SMS spam detection, including:
+This project implements an end-to-end machine learning pipeline for **SMS spam detection**, including preprocessing, model training, API inference with FastAPI, and Docker containerization.
 
-Data preprocessing
+## Project Overview
 
-Text vectorization (TF-IDF)
+The objective is to classify SMS messages into two categories:
 
-Model training (Logistic Regression)
+- **ham**: legitimate message
+- **spam**: unwanted or malicious message
 
-API deployment with FastAPI
+This project was built as a reproducible and deployable ML system rather than a notebook-only experiment.
 
-Containerization with Docker
+## Project Structure
 
-The goal is to build a reproducible and deployable ML system, not just a notebook experiment.
-
-- Problem Statement
-
-Classify SMS messages into:
-
-ham (legitimate message)
-
-spam (unwanted or malicious message)
-
-- Project Structure
+```bash
 sms-spam-classifier-fastapi/
 │
-├── app/                # FastAPI app
+├── app/
 │   └── main.py
-│
-├── data/               # Dataset
-│   └── spam.csv
-│
-├── models/             # Saved model + vectorizer
+├── data/
+│   └── sms.tsv
+├── models/
 │   ├── model.joblib
 │   └── vectorizer.joblib
-│
-├── src/                # ML pipeline
+├── src/
 │   ├── preprocess.py
 │   └── train.py
-│
-├── tests/              # Tests
-├── requirements.txt
+├── tests/
 ├── Dockerfile
-└── README.md
-- Installation (Local)
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
+├── LICENSE
+├── README.md
+├── requirements.txt
+└── test_preprocess.py
 
-pip install -r requirements.txt
-- Train the Model
+Dataset
+
+The project uses the SMS Spam Collection dataset, a public dataset for SMS spam detection.
+
+File used: data/sms.tsv
+
+Labels:
+
+ham
+
+spam
+
+Observed class distribution after loading:
+
+ham: 4499
+
+spam: 595
+
+This shows a class imbalance, which partly explains the lower recall on the spam class.
+
+Data Preprocessing
+
+Implemented in src/preprocess.py:
+
+lowercasing
+
+URL normalization
+
+number normalization
+
+special character removal
+
+whitespace cleanup
+
+duplicate removal
+
+Model Training
+
+Implemented in src/train.py.
+
+Model
+
+TF-IDF vectorization
+
+Logistic Regression
+
+Training command
 python src/train.py
+Output
 
-Output:
+The training script saves:
 
-trained model → models/model.joblib
+models/model.joblib
 
-vectorizer → models/vectorizer.joblib
+models/vectorizer.joblib
 
-- Run the API (Local)
+Evaluation
+
+Example result on the real dataset:
+
+Accuracy: 0.97
+
+Spam precision: 0.97
+
+Spam recall: 0.78
+
+Spam F1-score: 0.87
+
+This indicates strong overall performance, with lower recall on spam due in part to dataset imbalance.
+
+Run the API locally
+
+Start the API with:
+
 uvicorn app.main:app --reload
 
-Open:
+Then open:
 
 http://127.0.0.1:8000/docs
 
-Test example:
+Example query:
 
-Input: "Win money now!!!"
-Output: "spam"
-- Run with Docker
-Build image
+Input: Win money now!!!
+
+Output: spam
+
+Docker
+Build the image
 docker build -t spam-api .
-Run container
+Run the container
 docker run -p 8000:8000 spam-api
 
-Access API:
+Then access:
 
 http://127.0.0.1:8000/docs
-- Model Details
+Reproducibility
 
-Task: Binary text classification
+The environment is defined in:
 
-Model: Logistic Regression
+requirements.txt
 
-Features: TF-IDF vectorization
+The project can be executed locally or inside Docker for reproducible deployment.
 
-Preprocessing:
+Testing
 
-Lowercasing
+Basic preprocessing validation is available in:
 
-URL removal
+test_preprocess.py
 
-Number normalization
-
-Special character cleaning
-
-- Evaluation
-
-Example metrics:
-
-Accuracy: 1.00 (toy dataset)
-
-Precision / Recall / F1-score
-
-- Note: Current dataset is small for demonstration purposes.
-Model performance would be improved using a real dataset (e.g., SMS Spam Collection).
-
-- Reproducibility
-
-Environment managed via requirements.txt
-
-Deterministic pipeline (no randomness in preprocessing)
-
-Docker ensures consistent deployment
-
-- Testing
-
-Example test:
+Run with:
 
 python test_preprocess.py
+License
 
-Validates:
+This project is distributed under the MIT License.
 
-data loading
-
-text cleaning pipeline
-
-- Deployment Features
-
-FastAPI REST API
-
-Docker containerization
-
-Portable and reproducible ML system
-
-- Future Improvements
-
-Use real-world dataset (UCI SMS Spam Collection)
-
-Add model calibration / confidence score
-
-Implement CI/CD pipeline
-
-Add monitoring (latency, errors)
-
-Deploy to cloud (AWS / Azure)
-
-- Author
+Author
 
 Bertina DONFACK
-Master 2 – Artificial Intelligence & Data
-
-📜 License
-
-MIT License
